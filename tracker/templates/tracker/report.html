@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Financial Report</title>
+    </head>
+    <body>
+        <h2>Financial Report</h2>
+        <p>Total Income: {{ total_income }}</p>
+        <p>Total Expense: {{ total_expense }}</p>
+        <p>Balance: {{ balance }}</p>
+
+        <h3>Filter Transactions</h3>
+        <form method="get">
+                <label>Category:</label>
+            <select name="category">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+            <label>Type:</label>
+            <select name="type">
+                <option value="">All Types</option>
+                <option value="IN">Income</option>
+                <option value="OUT">Expense</option>
+            </select>
+            <button type="submit">Filter</button>
+            <h3>Filtered Transactions</h3>
+            <ul>
+                {% for transaction in transactions %}
+                    <li>{{ transaction.date }}: {{ transaction.type }} - {{ transaction.amount }} ({{ transaction.description }}) - Category: {{ transaction.category|default:"No Category" }}</li>
+                {% empty %}
+                    <li>No transactions found.</li>
+                {% endfor %}
+            </ul>
+            <a href="{% url 'add_transaction' %}">Add Transaction</a> | <a href="{% url 'transaction_list' %}">Transaction List</a>
+        </form>
+    </body>
+</html>
