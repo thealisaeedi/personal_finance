@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Transaction List</title>
+    </head>
+    <body>
+        <h2>Your Transaction</h2>
+        <ul>
+            {% for transaction in transactions %}
+                <li>{{ transaction.date }}: {{ transaction.type }} - {{ transaction.amount }} {{ transaction.description }} - Category: {{transaction.category|default:"No Category"}}</li>
+            {% empty %}
+                <li>No transaction yet.</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'add_transaction' %}">Add Transaction</a>
+    </body>
+</html>
