@@ -12,6 +12,19 @@ def report(request):
     total_expense = transactions.filter(type='OUT').aggregate(Sum('amount'))['amount__sum'] or 0
     balance = total_income - total_expense
 
+
+    categories = Category.objects.filter(user=request.user)
+    category_data = []
+    for category in categories:
+        income = transactions.filter(type='IN', category=category).aggregate(Sum('amount'))['amount__sum'] or 0
+        expense = transactions.filter(type='OUT', category=category).aggregate(Sum('amount'))['amount__sum'] or 0
+        category_data.append({
+            'name': category.name,
+            'income': float(income),
+            'expense': float(expense),
+        })
+
+    # Filters
     category_id = request.GET.get('category')
     type_filter = request.GET.get('type')
     
@@ -20,7 +33,6 @@ def report(request):
     if type_filter:
         transactions = transactions.filter(type=type_filter)
 
-    categories = Category.objects.filter(user=request.user)
 
     context = {
         'transactions': transactions,
@@ -28,6 +40,7 @@ def report(request):
         'total_expense': total_expense,
         'balance': balance,
         'categories': categories,
+        'category_data': category_data,
     }
 
     return render(request, 'tracker/report.html', context)
