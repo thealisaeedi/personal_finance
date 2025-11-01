@@ -1,0 +1,142 @@
+<!-- tracker/templates/tracker/dashboard.html -->
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="container mx-auto p-6 max-w-4xl">
+
+    <div class="space-y-5">
+
+        <!-- Welcome + Summary Cards -->
+        <div>
+            <h1 class="text-3xl font-bold mb-2">Welcome back, {{ user.username|title }}!</h1>
+            <p class="text-gray-400">Here's your financial overview</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Total Income -->
+            <div class="bg-gradient-to-br from-green-900 to-green-800 p-6 rounded-xl shadow-lg border border-green-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-green-300 text-sm">Total Income</p>
+                        <p class="text-3xl font-bold text-white mt-1">{{ total_income }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-green-700 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Expense -->
+            <div class="bg-gradient-to-br from-red-900 to-red-800 p-6 rounded-xl shadow-lg border border-red-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-red-300 text-sm">Total Expense</p>
+                        <p class="text-3xl font-bold text-white mt-1">{{ total_expense }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-red-700 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Balance -->
+            <div class="bg-gradient-to-br from-blue-900 to-blue-800 p-6 rounded-xl shadow-lg border border-blue-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-300 text-sm">Current Balance</p>
+                        <p class="text-3xl font-bold text-white mt-1">{{ balance }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-700 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts & Recent Transactions -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <!-- Pie Chart -->
+            <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                <h2 class="text-xl font-semibold mb-4">Income vs Expense</h2>
+                <canvas id="pieChart" class="w-full h-64"></canvas>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">Recent Transactions</h2>
+                    <a href="{% url 'transaction_list' %}" class="text-sm text-indigo-400 hover:text-indigo-300">View all →</a>
+                </div>
+                {% if transactions %}
+                    <div class="space-y-3">
+                        {% for t in transactions %}
+                            <div class="flex justify-between items-center p-3 bg-gray-700 rounded-lg">
+                                <div>
+                                    <p class="font-medium">{{ t.get_type_display }}</p>
+                                    <p class="text-sm text-gray-400">{{ t.description|default:"—" }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold {% if t.type == 'IN' %}text-green-400{% else %}text-red-400{% endif %}">
+                                        {% if t.type == 'IN' %}+{% else %}-{% endif %}{{ t.amount }}
+                                    </p>
+                                    <p class="text-xs text-gray-500">{{ t.date }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-400 text-center py-8">No transactions yet.</p>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="flex flex-wrap gap-4 justify-center">
+            <a href="{% url 'add_transaction' %}" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <span>Add Transaction</span>
+            </a>
+            <a href="{% url 'report' %}" class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                <span>View Report</span>
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<!-- Pie Chart Script -->
+<script>
+    const pieCtx = document.getElementById('pieChart').getContext('2d');
+    new Chart(pieCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Income', 'Expense'],
+            datasets: [{
+                data: [{{ pie_data.income }}, {{ pie_data.expense }}],
+                backgroundColor: ['#10B981', '#EF4444'],
+                borderColor: ['#34D399', '#F87171'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom', labels: { color: '#E5E7EB' } }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

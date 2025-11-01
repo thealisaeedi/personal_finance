@@ -63,3 +63,26 @@ def transaction_list(request):
     transactions = Transaction.objects.filter(user=request.user)
     return render(request, 'tracker/transaction_list.html', {'transactions': transactions})
 
+@login_required
+def dashboard(request):
+    user = request.user
+    transactions = Transaction.objects.filter(user=user).order_by('-date')[:5]
+    total_income = Transaction.objects.filter(user=user, type='IN').aggregate(Sum('amount'))['amount__sum'] or 0
+    total_expense = Transaction.objects.filter(user=user, type='OUT').aggregate(Sum('amount'))['amount__sum'] or 0
+    balance = total_income - total_expense
+
+    pie_data = {
+        'income': float(total_income),
+        'expense': float(total_expense),
+    }
+
+    context = {
+        'transactions': transactions,
+        'total_income': total_income,
+        'total_expense': total_expense,
+        'balance': balance,
+        'pie_data': pie_data,
+    }
+
+    return render(request, 'tracker/dashboard.html', context)
+
