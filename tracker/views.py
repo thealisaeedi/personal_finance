@@ -5,6 +5,9 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 
 
+def landing(request):
+    return render(request, 'tracker/landing.html')
+
 @login_required
 def report(request):
     transactions = Transaction.objects.filter(user=request.user)

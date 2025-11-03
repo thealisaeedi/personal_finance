@@ -1,0 +1,156 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FinanceTracker{% endblock %}</title>
+
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Chart.js (برای نمودارها) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Font: Inter (اختیاری - از Google Fonts) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Config (اختیاری - برای فونت و رنگ‌ها) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#10B981',   // سبز برای درآمد
+                        danger: '#EF4444',    // قرمز برای هزینه
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+    <style>
+    input[type="text"], input[type="password"], input[type="email"] {
+        @apply w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent;
+    }
+</style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+    <!-- Navigation Bar -->
+    <nav class="bg-gray-800 border-b border-gray-700 shadow-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+
+            <!-- Logo -->
+            <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'landing' %}{% endif %}" 
+            class="flex items-center space-x-2">
+                <div class="w-9 h-9 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg">
+                    <span class="text-white font-bold text-lg">FT</span>
+                </div>
+                <span class="text-xl font-bold text-green-400 hover:text-green-300 transition">FinanceTracker</span>
+            </a>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center space-x-6">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="text-gray-300 hover:text-white transition flex items-center space-x-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1"/>
+                        </svg>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{% url 'add_transaction' %}" class="text-gray-300 hover:text-white transition flex items-center space-x-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        <span>Add</span>
+                    </a>
+                    <a href="{% url 'transaction_list' %}" class="text-gray-300 hover:text-white transition flex items-center space-x-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                        <span>List</span>
+                    </a>
+                    <a href="{% url 'report' %}" class="text-gray-300 hover:text-white transition flex items-center space-x-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        <span>Report</span>
+                    </a>
+                {% endif %}
+            </div>
+
+            <!-- User Status (Login / Logout) -->
+            <div class="flex items-center space-x-4">
+                {% if user.is_authenticated %}
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-full flex items-center justify-center text-sm font-medium shadow">
+                            {{ user.username|slice:":1"|upper }}
+                        </div>
+                        <span class="text-sm text-gray-300 hidden sm:block">{{ user.username }}</span>
+                    </div>
+                    <a href="{% url 'logout' %}" class="px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition font-medium">
+                        Logout
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition font-medium">
+                        Login
+                    </a>
+                    <a href="{% url 'signup' %}" class="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition font-medium hidden sm:inline-block">
+                        Sign Up
+                    </a>
+                {% endif %}
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button class="md:hidden text-gray-300 hover:text-white" id="mobile-menu-btn">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-4 py-3 space-y-2 bg-gray-800 border-t border-gray-700">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="block py-2 text-gray-300 hover:text-white">Dashboard</a>
+                    <a href="{% url 'add_transaction' %}" class="block py-2 text-gray-300 hover:text-white">Add Transaction</a>
+                    <a href="{% url 'transaction_list' %}" class="block py-2 text-gray-300 hover:text-white">Transaction List</a>
+                    <a href="{% url 'report' %}" class="block py-2 text-gray-300 hover:text-white">Financial Report</a>
+                    <a href="{% url 'logout' %}" class="block py-2 text-red-400 hover:text-red-300">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="block py-2 text-indigo-400 hover:text-indigo-300">Login</a>
+                    <a href="{% url 'signup' %}" class="block py-2 text-green-400 hover:text-green-300">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 container mx-auto px-4 py-8 max-w-6xl">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 border-t border-gray-700 py-4 mt-auto">
+        <div class="container mx-auto text-center text-gray-400 text-sm">
+            &copy; 2025 <span class="text-green-400 font-medium">FinanceTracker</span>. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Mobile Menu Script -->
+    <script>
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+    </script>
+
+</body>
+</html>
