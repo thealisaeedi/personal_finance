@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts', # App for user accounts
     'tracker', # App for tracking transactions
+    'widget_tweaks', # for adding style to forms and etc
 ]
 
 MIDDLEWARE = [

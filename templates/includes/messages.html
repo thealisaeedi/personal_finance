@@ -1,0 +1,13 @@
+<!-- templates/includes/messages.html -->
+{% if messages %}
+    <div class="mb-6 space-y-2">
+        {% for message in messages %}
+            <div class="p-4 rounded-lg text-sm text-center border
+                {% if message.tags == 'success' %}bg-green-900 text-green-300 border-green-700
+                {% elif message.tags == 'error' %}bg-red-900 text-red-300 border-red-700
+                {% else %}bg-blue-900 text-blue-300 border-blue-700{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}

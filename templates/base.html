@@ -3,8 +3,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}FinanceTracker{% endblock %}</title>
+    <title>{% block title %}Finario - Financial Scenario{% endblock %}</title>
 
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -41,6 +42,8 @@
     }
 </style>
 </head>
+{% include 'includes/messages.html' %}
+
 <body class="bg-gray-900 text-white min-h-screen flex flex-col">
     <!-- Navigation Bar -->
     <nav class="bg-gray-800 border-b border-gray-700 shadow-md">
@@ -50,9 +53,9 @@
             <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'landing' %}{% endif %}" 
             class="flex items-center space-x-2">
                 <div class="w-9 h-9 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg">
-                    <span class="text-white font-bold text-lg">FT</span>
+                    <span class="text-white font-bold text-lg">FS</span>
                 </div>
-                <span class="text-xl font-bold text-green-400 hover:text-green-300 transition">FinanceTracker</span>
+                <span class="text-xl font-bold text-green-400 hover:text-green-300 transition">Finario</span>
             </a>
 
             <!-- Desktop Menu -->

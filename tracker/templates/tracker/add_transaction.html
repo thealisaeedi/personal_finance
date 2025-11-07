@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block title %} Add Transaction {% endblock title %}
 {% block content %}
+    {% with categories=user.category_set.all %}
     <div class="container mx-auto p-6 max-w-2xl">
 
         <h1 class="text-3xl font-bold text-white mb-8 text-center">Add New Transaction</h1>
@@ -45,12 +46,22 @@
                     <select name="{{ form.category.name }}" id="{{ form.category.id_for_label }}"
                             class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                         <option value="">-- No Category --</option>
-                        {% for category in form.category.queryset %}
-                            <option value="{{ category.id }}" {% if form.category.value == category.id %}selected{% endif %}>{{ category.name }}</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}" 
+                                {% if form.category.value == category.id %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
 
+                <div class="text-sm text-gray-400 mt-2">
+                    No category? 
+                    <a href="{% url 'add_category' %}" class="text-indigo-400 hover:text-indigo-300 underline">
+                        Add new category
+                    </a>
+                </div>
+                
                 <!-- Description -->
                 <div>
                     <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-2">
@@ -82,4 +93,5 @@
         </div>
 
     </div>
+    {% endwith %}
 {% endblock %}

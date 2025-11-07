@@ -41,6 +41,33 @@
                                     <span class="inline-block ml-2 text-xs text-gray-500">No Category</span>
                                 {% endif %}
                             </div>
+                                   
+                            <!-- Edit & Delete Buttons -->
+                            <div class="flex items-center space-x-3 sm:space-x-reverse mt-2">
+                                <!-- Edit Button -->
+                                <a href="{% url 'edit_transaction' transaction.pk %}"
+                                class="flex items-center gap-1 px-3 py-1.5 bg-yellow-500/20 border border-yellow-400 text-yellow-300 rounded-lg 
+                                        hover:bg-yellow-500/30 hover:text-yellow-200 transition-all duration-200 text-sm font-medium shadow-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                            d="M11 5h2m2 0h3m0 0v3m0-3l-9 9m0 0v3h3m-3-3l9-9" />
+                                    </svg>
+                                    Edit
+                                </a>
+
+                                <!-- Delete Button -->
+                                <a href="{% url 'delete_transaction' transaction.pk %}"
+                                class="flex items-center gap-1 px-3 py-1.5 bg-red-500/20 border border-red-400 text-red-300 rounded-lg 
+                                        hover:bg-red-500/30 hover:text-red-200 transition-all duration-200 text-sm font-medium shadow-sm"
+                                onclick="return confirm('Are you sure you want to delete this transaction?');">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                            d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                    Delete
+                                </a>
+                            </div>
+
                         </div>
                     {% endfor %}
                 </div>
@@ -52,6 +79,8 @@
             {% endif %}
 
         </div>
+
+
 
         <!-- Add Button -->
         <div class="mt-8 text-center">

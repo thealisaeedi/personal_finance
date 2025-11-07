@@ -1,12 +1,27 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Transaction, Category
-from .forms import TransactionForm
+from .forms import TransactionForm, CategoryForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
+from django.contrib import messages
 
 
 def landing(request):
     return render(request, 'tracker/landing.html')
+
+@login_required
+def add_category(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            category = form.save(commit=False)
+            category.user = request.user
+            category.save()
+            messages.success(request, f'Category {category.name} added!')
+            return redirect('add_transaction')
+    else:
+        form = CategoryForm()
+    return render(request, 'tracker/add_category.html', {'form': form})
 
 @login_required
 def report(request):
@@ -56,9 +71,11 @@ def add_transaction(request):
             transaction = form.save(commit=False)
             transaction.user = request.user
             transaction.save()
-            return redirect('transaction_list')
+            messages.success(request, 'Transaction added successfully!')
+            return redirect('dashboard')
     else:
         form = TransactionForm(user=request.user)
+
     return render(request, 'tracker/add_transaction.html', {'form': form})
 
 @login_required
@@ -89,3 +106,29 @@ def dashboard(request):
 
     return render(request, 'tracker/dashboard.html', context)
 
+
+
+@login_required
+def edit_transaction(request, pk):
+    transaction = get_object_or_404(Transaction, pk=pk, user=request.user)
+
+    if request.method == 'POST':
+        form = TransactionForm(request.POST, instance=transaction, user=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Transaction edited successfully")
+            return redirect('transaction_list')
+    else: 
+        form = TransactionForm(instance=transaction, user=request.user)
+
+    return render(request, 'tracker/edit_transaction.html', {'form': form, 'transaction': transaction})
+
+@login_required
+def delete_transaction(request, pk):
+    transaction = get_object_or_404(Transaction, pk=pk, user=request.user)
+
+    if request.method == 'POST':
+        transaction.delete()
+        messages.success(request, 'transaction deleted')
+        return redirect('transaction_list')
+    return render(request, 'tracker/delete_transaction.html', {'transaction': transaction})
