@@ -1,0 +1,89 @@
+<!-- tracker/templates/tracker/category_manager.html -->
+{% extends 'base.html' %}
+{% block title %}Manage Categories{% endblock %}
+
+{% block content %}
+
+<div class="max-w-4xl mx-auto">
+    <div class="bg-gray-800 rounded-xl shadow-lg border border-gray-700 overflow-hidden">
+        
+        <!-- Header -->
+        <div class="bg-gray-900 p-6 border-b border-gray-700">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-green-400">Manage Categories</h1>
+                <a href="{% url 'add_category' %}" class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Add New
+                </a>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        {% include 'includes/messages.html' %}
+
+        <!-- Categories List -->
+        <div class="p-6">
+            {% if categories %}
+                <div class="grid gap-4">
+                    {% for cat in categories %}
+                        <div class="bg-gray-700 rounded-lg p-5 flex items-center justify-between hover:bg-gray-600 transition">
+                            
+                            <!-- Name + Count -->
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full flex items-center justify-center font-bold text-lg">
+                                    {{ cat.name|slice:":1"|upper }}
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-white">{{ cat.name }}</h3>
+                                    <p class="text-sm text-gray-400">
+                                        {{ cat.transaction_set.count }} transaction{{ cat.transaction_set.count|pluralize }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="flex items-center space-x-3">
+                                <!-- View Transactions -->
+                                <a href="{% url 'report' %}?category={{ cat.id }}"
+                                   class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    View
+                                </a>
+
+                                <!-- Edit -->
+                                <a href="{% url 'edit_category' cat.id %}"
+                                class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-lg transition">
+                                    Edit
+                                </a>
+
+                                <!-- Delete -->
+                                <form method="post" action="{% url 'delete_category' cat.id %}" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            onclick="return confirm('Are you sure you want to delete \"{{ cat.name }}\"?')"
+                                            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-16">
+                    <p class="text-gray-400 text-lg">You haven't created any categories yet.</p>
+                    <a href="{% url 'add_category' %}" class="mt-4 inline-block px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition">
+                        Create Your First Category
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -132,3 +132,37 @@ def delete_transaction(request, pk):
         messages.success(request, 'transaction deleted')
         return redirect('transaction_list')
     return render(request, 'tracker/delete_transaction.html', {'transaction': transaction})
+
+@login_required
+def category_manager(request):
+    categories = Category.objects.filter(user=request.user).order_by('name')
+
+    # For filtering transactions
+    selected_category_id = request.GET.get('cat')
+    if selected_category_id:
+        return redirect('report') + f'?category={selected_category_id}'
+    return render(request, 'tracker/category_manager.html', {
+        'categories': categories
+    })
+
+@login_required
+def edit_category(request, pk):
+    category = get_object_or_404(Category, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Category updated")
+            return redirect('category_manager')
+    else:
+        form = CategoryForm(instance=category)
+    return render(request, 'tracker/edit_category.html', {'form': form, 'category': category})
+
+@login_required
+def delete_category(request, pk):
+    category = get_object_or_404(Category, pk=pk, user=request.user)
+    if request.method == 'POST':
+        category.delete()
+        messages.success(request, f'Category "{category.name}" deleted')
+        return redirect('category_manager')
+    return render(request, 'tracker/delete_categroy.html', {'category': category})
