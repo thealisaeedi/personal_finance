@@ -9,7 +9,8 @@ def signup(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
+           
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, 'Signup was successful, Welcome')
             return redirect('dashboard')
     else:
@@ -21,12 +22,12 @@ def login_view(request):
         form = LoginForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            login(request, user)
+            
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, "Login was successful")
             return redirect('dashboard')
     else:
         form = LoginForm()
-
     return render(request, 'accounts/login.html', {'form': form})
 
 @login_required
